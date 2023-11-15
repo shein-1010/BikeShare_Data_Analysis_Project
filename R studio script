@@ -1,0 +1,90 @@
+
+month1 <- read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202210-divvy-tripdata.csv")
+month2 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202211-divvy-tripdata.csv")
+month3 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202212-divvy-tripdata.csv")
+month4 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202301-divvy-tripdata.csv")
+month5 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202302-divvy-tripdata.csv")
+month6 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202303-divvy-tripdata.csv")
+month7 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202304-divvy-tripdata.csv")
+month8 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202305-divvy-tripdata.csv")
+month9 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202306-divvy-tripdata.csv")
+month10 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202307-divvy-tripdata.csv")
+month11 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202308-divvy-tripdata.csv")
+month12 <-read.csv("C:\\Users\\SHEIN\\Documents\\Projects\\Divvy\\12MOnthsDataunzip\\202309-divvy-tripdata.csv")
+
+dim(month1)
+View(month1)
+
+OneYearData <- rbind(month1,month2,month3,month4,month5,month6,month7,month8,month9,month10,month11,month12)
+dim(OneYearData)
+head(OneYearData)
+View(OneYearData)
+
+install.packages("dplyr")
+library("dplyr")
+
+install.packages("skimr")
+library("skimr")
+
+install.packages("janitor")
+library("janitor")
+
+install.packages("lubridate")
+library("lubridate")
+
+skim_without_charts(OneYearData)
+glimpse(OneYearData)
+
+OneYearData %>% 
+  filter(member_casual=="casual")
+
+View(OneYearData)
+
+OneYearNoNA <- remove_empty(dat =OneYearData, which = c("rows", "cols"), cutoff = 1, quiet = TRUE)
+  
+glimpse(OneYearData)
+glimpse(OneYearNoNA)
+dim(OneYearData)
+summary(OneYearData)
+
+dim(OneYearNoNA)
+
+OneYearNoNA <- na.omit(OneYearData)
+summary(OneYearNoNA)
+
+OneYearData <- OneYearNoNA
+OneYearData$started_at <- lubridate::as_datetime(OneYearData$started_at)
+OneYearData$ended_at <- lubridate::as_datetime(OneYearData$ended_at)
+
+
+
+
+
+OneYearData$ride_time <- difftime(OneYearData$ended_at,OneYearData$started_at, units = c("hours"))
+
+View(OneYearData)
+summary(OneYearData)
+
+
+
+OneYearData$ride_time <- as.numeric(OneYearData$ride_time)
+
+
+OneYearData$ride_time_min <- difftime(OneYearData$ended_at,OneYearData$started_at, units = c("mins"))
+
+
+OneYearData$ride_time_min <- as.numeric(OneYearData$ride_time_min)
+
+OneYearData$start_date <- lubridate::date(OneYearData$started_at)
+
+dim(OneYearData)
+View(OneYearData)
+
+OneYearData$day_of_week <- wday(OneYearData$start_date,label = TRUE,abbr = FALSE)
+
+OneYearData <- subset(OneYearData,select = -ride_time)
+
+
+write.csv(OneYearData, "OneYearDivvy2022.csv",row.names = FALSE)
+
+
